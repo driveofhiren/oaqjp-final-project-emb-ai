@@ -6,10 +6,12 @@ a response with the detected emotions and the dominant emotion is returned.
 """
 
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 from EmotionDetection.emotion_detection import emotion_detector
 
 # Initialize the Flask application
 app = Flask(__name__)
+CORS(app)
 
 @app.route("/emotionDetector", methods=["POST"])
 def emotion_detect():
@@ -28,21 +30,24 @@ def emotion_detect():
     """
     # Get the incoming JSON data
     data = request.get_json()
+   
     # Check if 'text' is present in the request data
     if "text" not in data:
         return jsonify({"error": "No text provided"}), 400
 
-    # Call emotion_detector function with the input text
-    result = emotion_detector(data["text"])
-
     # Check if the 'text' field is empty or just spaces
-    if not data["text"].strip():
-        return jsonify({"result": "Invalid text! Please try again!"}), 400
+    if not data["text"].strip(): 
+        return jsonify("Invalid Input! Please try again!"), 400
+    
+    result = emotion_detector(data["text"])
+    print(result)
 
     # Check if the result from emotion_detector contains required fields
     if "emotions" not in result or "dominant_emotion" not in result:
         return jsonify({"error": "Invalid response from emotion_detector"}), 500
 
+     # Call emotion_detector function with the input text
+   
     # Extract emotions and create a dictionary of emotion scores
     emotions = {item['label']: item['score'] for item in result['emotions']}
     target_emotions = ["anger", "disgust", "fear", "joy", "sadness"]
@@ -51,7 +56,7 @@ def emotion_detect():
     response_parts = []
     for emotion in target_emotions:
         score = emotions.get(emotion, 0)
-        response_parts.append(f"'{emotion}': {round(score, 3)}")
+        response_parts.append(f"'{emotion}': {score}")
 
     # Construct the final response text
     response_text = (
@@ -61,7 +66,7 @@ def emotion_detect():
     )
 
     # Return the response as a JSON
-    return jsonify({"result": response_text})
+    return jsonify(response_text)
 
 if __name__ == "__main__":
     # Run the Flask app in debug mode

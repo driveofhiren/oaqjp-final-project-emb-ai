@@ -15,7 +15,7 @@ def emotion_detector(text):
         }
   
     url = "https://api-inference.huggingface.co/models/SamLowe/roberta-base-go_emotions"
-    headers = {"Authorization": "Bearer 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"}  # Can leave empty for limited free access
+    headers = {"Authorization": "Bearer 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"}  
     
     data = {"inputs": text}
     
@@ -58,3 +58,20 @@ if __name__ == "__main__":
     test_text = "I am feeling very happy and excited today!"
     result = emotion_detector(test_text)
     print(result)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
